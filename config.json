@@ -1,1 +1,7 @@
-{}
+{
+  "processes": [
+    { "name": "notepad.exe", "args": "" },
+    { "name": "calc.exe", "args": "" }
+  ],
+  "foreground": "notepad.exe"
+}

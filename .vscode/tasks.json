@@ -1,0 +1,28 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "build main.exe",
+      "type": "shell",
+      "command": "g++",
+      "args": [
+        "-std=c++11",
+        "src/main.cpp",
+        "src/ConfigManager.cpp",
+        "src/ProcessMonitor.cpp",
+        "src/OSApiWrapper.cpp",
+        // add other .cpp files if you have them
+        "-o",
+        "build/main.exe"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": ["$gcc"],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      }
+    }
+  ]
+}
