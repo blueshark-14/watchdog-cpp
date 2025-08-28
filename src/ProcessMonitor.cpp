@@ -2,6 +2,7 @@
 #include <chrono>
 #include <iostream>
 #include <thread>
+#include "Logger.h" 
 
 ProcessMonitor::ProcessMonitor(ConfigManager& cfg, OSApiWrapper& api)
     : cfg(cfg), api(api) {}
@@ -26,7 +27,7 @@ void ProcessMonitor::run(std::function<bool()> keepRunning) {
             for (auto it = monitored.begin(); it != monitored.end(); ++it) {
                 const std::string& name = it->first;
                 if (newMonitored.find(name) == newMonitored.end()) {
-                    std::cout << "Stopped monitoring: " << name << std::endl;
+                    logToWindowsEventLog("Stopped monitoring: " + name, EVENTLOG_WARNING_TYPE);
                 }
             }
             monitored = std::move(newMonitored);
@@ -37,7 +38,7 @@ void ProcessMonitor::run(std::function<bool()> keepRunning) {
             const std::string& name = it->first;
             const ProcessInfo& info = it->second;
             if (!api.isProcessRunning(name)) {
-                std::cout << "Process stopped, restarting: " << name << std::endl;
+                logToWindowsEventLog("Process stopped, restarting: " + name, EVENTLOG_WARNING_TYPE);
                 api.startProcess(name, info.getArgs());
             }
         }

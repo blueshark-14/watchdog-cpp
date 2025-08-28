@@ -72,6 +72,7 @@
 #include <Windows.h>
 #include <TlHelp32.h>
 #include <iostream>
+#include "Logger.h"
 
 // Converts a wide string (WCHAR*) to a UTF-8 std::string
 // This is needed because PROCESSENTRY32W::szExeFile is WCHAR[260] (wide string),
@@ -104,8 +105,10 @@ bool OSApiWrapper::isProcessRunning(const std::string& name) {
     std::cout << "Checking if process is running: " << name << std::endl;
     // Take a snapshot of all processes in the system
     HANDLE hSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
-    if (hSnap == INVALID_HANDLE_VALUE) return false; // If snapshot fails, return false
-
+     if (hSnap == INVALID_HANDLE_VALUE) {
+        logToWindowsEventLog("Failed to take process snapshot for: " + name, EVENTLOG_ERROR_TYPE);
+        return false;
+    }
     PROCESSENTRY32W pe;
     pe.dwSize = sizeof(PROCESSENTRY32W);
     bool found = false;
@@ -121,6 +124,11 @@ bool OSApiWrapper::isProcessRunning(const std::string& name) {
         } while (Process32NextW(hSnap, &pe));
     }
     CloseHandle(hSnap); // Always close the snapshot handle
+    if (found) {
+        logToWindowsEventLog("Process is running: " + name);
+    } else {
+        logToWindowsEventLog("Process is NOT running: " + name, EVENTLOG_WARNING_TYPE);
+    }
     return found;
 }
 
@@ -151,18 +159,22 @@ void OSApiWrapper::startProcess(const std::string& exe, const std::string& args)
         CloseHandle(pi.hProcess);
         CloseHandle(pi.hThread);
         std::cout << "Started process: " << exe << " " << args << std::endl;
+        logToWindowsEventLog("Started process: " + exe + " " + args);
     } else {
-        std::cerr << "Failed to start process: " << exe << " " << args << std::endl;
+        logToWindowsEventLog("Failed to start process: " + exe + " " + args, EVENTLOG_ERROR_TYPE);
     }
 }
 
 void OSApiWrapper::killProcess(const std::string& name) {
     // Take a snapshot of all processes in the system
     HANDLE hSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
-    if (hSnap == INVALID_HANDLE_VALUE) return; // If snapshot fails, exit
-
+    if (hSnap == INVALID_HANDLE_VALUE) {
+        logToWindowsEventLog("Failed to take process snapshot for kill: " + name, EVENTLOG_ERROR_TYPE);
+        return;
+    }
     PROCESSENTRY32W pe;
     pe.dwSize = sizeof(PROCESSENTRY32W);
+    bool killed = false;
 
     // Iterate through all processes in the snapshot
     if (Process32FirstW(hSnap, &pe)) {
@@ -176,11 +188,16 @@ void OSApiWrapper::killProcess(const std::string& name) {
                     TerminateProcess(hProc, 0);
                     CloseHandle(hProc); // Close the process handle
                     std::cout << "Killed process: " << name << std::endl;
+                    logToWindowsEventLog("Killed process: " + name, EVENTLOG_WARNING_TYPE);
+                    killed = true;
                 }
             }
         } while (Process32NextW(hSnap, &pe));
     }
     CloseHandle(hSnap); // Always close the snapshot handle
+    if (!killed) {
+        logToWindowsEventLog("No running process found to kill: " + name, EVENTLOG_WARNING_TYPE);
+    }
 }
 
 // Static callback function for EnumWindows
@@ -221,6 +238,7 @@ void OSApiWrapper::bringToForeground(const std::string& name) {
     if (pid == 0) {
         // No process found with the given name
         std::cerr << "Process not found: " << name << std::endl;
+        logToWindowsEventLog("Process not found for foreground: " + name, EVENTLOG_WARNING_TYPE);
         return;
     }
 
@@ -234,7 +252,9 @@ void OSApiWrapper::bringToForeground(const std::string& name) {
     if (data.hwnd) {
         SetForegroundWindow(data.hwnd);
         std::cout << "Brought process to foreground: " << name << std::endl;
+        logToWindowsEventLog("Brought process to foreground: " + name);
     } else {
         std::cerr << "No window found for process: " << name << std::endl;
+        logToWindowsEventLog("No window found for process: " + name, EVENTLOG_WARNING_TYPE);
     }
 }

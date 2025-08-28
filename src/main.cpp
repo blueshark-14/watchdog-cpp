@@ -7,6 +7,7 @@
 #include "ConfigManager.h"
 #include "OSApiWrapper.h"
 #include "ProcessMonitor.h"
+#include "Logger.h"
 using namespace std;
 
 int main() {

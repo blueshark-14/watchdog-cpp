@@ -11,6 +11,7 @@
         "src/ConfigManager.cpp",
         "src/ProcessMonitor.cpp",
         "src/OSApiWrapper.cpp",
+        "src/Logger.cpp", 
         // add other .cpp files if you have them
         "-o",
         "build/main.exe"
