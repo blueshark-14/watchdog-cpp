@@ -2,6 +2,8 @@
 #include <iostream>
 #include <string>
 #include <limits>
+#include <thread>
+#include <atomic>
 #include "ConfigManager.h"
 #include "OSApiWrapper.h"
 #include "ProcessMonitor.h"
@@ -9,15 +11,17 @@ using namespace std;
 
 int main() {
     ConfigManager cfg("config.json");
-    cfg.load();
-
     OSApiWrapper api;
     ProcessMonitor monitor(cfg, api);
 
-    monitor.run();
+    // Run the monitor in a background thread so the user can interact with the menu
+    std::atomic<bool> running{true};
+    std::thread monitorThread([&]() {
+        monitor.run([&running]() { return running.load(); });
+    });
 
-    std::string procName = "notepad.exe";
     int choice = 0;
+    std::string procName, args;
 
     while (true) {
         std::cout << "\nChoose an action:\n";
@@ -32,21 +36,27 @@ int main() {
 
         if (choice == 5) break;
 
-       switch (choice) {
+        std::cout << "Enter process name (e.g., notepad.exe): ";
+        std::getline(std::cin, procName);
+
+        switch (choice) {
             case 1: {
-                bool running = api.isProcessRunning(procName);
-                std::cout << procName << " running? " << (running ? "Yes" : "No") << std::endl;
+                bool runningProc = api.isProcessRunning(procName);
+                std::cout << procName << " running? " << (runningProc ? "Yes" : "No") << std::endl;
                 break;
             }
-            case 2:
-                api.startProcess(procName, "");
+            case 2: {
+                std::cout << "Enter arguments (or leave blank): ";
+                std::getline(std::cin, args);
+                api.startProcess(procName, args);
                 break;
+            }
             case 3:
                 api.bringToForeground(procName);
                 break;
             case 4: {
-                bool running = api.isProcessRunning(procName);
-                if (running) {
+                bool runningProc = api.isProcessRunning(procName);
+                if (runningProc) {
                     api.killProcess(procName);
                 } else {
                     std::cout << procName << " is not running. Nothing to kill.\n";
@@ -57,6 +67,10 @@ int main() {
                 std::cout << "Invalid choice. Try again.\n";
         }
     }
+
+    // Stop the monitor thread
+    running = false;
+    if (monitorThread.joinable()) monitorThread.join();
 
     std::cout << "Foreground app should be: " << cfg.getForegroundApp() << std::endl;
     std::cout << "Press Enter to exit...";

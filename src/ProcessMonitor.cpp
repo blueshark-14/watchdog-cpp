@@ -1,19 +1,47 @@
 #include "ProcessMonitor.h"
-#include "ProcessInfo.h"
-#include "ConfigManager.h"
+#include <chrono>
 #include <iostream>
+#include <thread>
 
 ProcessMonitor::ProcessMonitor(ConfigManager& cfg, OSApiWrapper& api)
-    : cfg(cfg), api(api) {
-    std::cout << "ProcessMonitor created." << std::endl;
-}
+    : cfg(cfg), api(api) {}
 
-void ProcessMonitor::run() {
-    std::cout << "ProcessMonitor running..." << std::endl;
-
-    std::vector<ProcessInfo> processes = cfg.getProcesses();
-    for (const auto& proc : processes) {
-        std::cout << "Would monitor process: " << proc.getName() << " with args: " << proc.getArgs() << std::endl;
+void ProcessMonitor::run(std::function<bool()> keepRunning) {
+    std::unordered_map<std::string, ProcessInfo> monitored;
+    for (const auto& p : cfg.getProcesses()) {
+        monitored[p.getName()] = p;
     }
-    std::cout << "Foreground app should be: " << cfg.getForegroundApp() << std::endl;
+
+    while (keepRunning()) {
+        // Reload config if changed
+        if (cfg.reloadIfChanged()) {
+            std::unordered_map<std::string, ProcessInfo> newMonitored;
+            for (const auto& p : cfg.getProcesses()) {
+                newMonitored[p.getName()] = p;
+                if (monitored.find(p.getName()) == monitored.end()) {
+                    if (!api.isProcessRunning(p.getName()))
+                        api.startProcess(p.getName(), p.getArgs());
+                }
+            }
+            for (auto it = monitored.begin(); it != monitored.end(); ++it) {
+                const std::string& name = it->first;
+                if (newMonitored.find(name) == newMonitored.end()) {
+                    std::cout << "Stopped monitoring: " << name << std::endl;
+                }
+            }
+            monitored = std::move(newMonitored);
+        }
+
+        // Ensure all monitored processes are running
+        for (auto it = monitored.begin(); it != monitored.end(); ++it) {
+            const std::string& name = it->first;
+            const ProcessInfo& info = it->second;
+            if (!api.isProcessRunning(name)) {
+                std::cout << "Process stopped, restarting: " << name << std::endl;
+                api.startProcess(name, info.getArgs());
+            }
+        }
+
+        std::this_thread::sleep_for(std::chrono::seconds(2));
+    }
 }

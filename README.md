@@ -55,6 +55,29 @@ watchdog-cpp/
 
 ---
 
+## 📝 Note on Monitoring Multi-Process Applications (e.g., chrome.exe)
+
+**Some applications, like Google Chrome, use a multi-process architecture:**
+- When you launch Chrome (`chrome.exe`), it starts a main process and then spawns multiple child processes for tabs, extensions, and other features.
+- All these processes typically have the same executable name (`chrome.exe`).
+
+**Implications for monitoring:**
+- The watchdog checks if any process with the name `chrome.exe` is running.
+- If at least one `chrome.exe` process exists, the watchdog considers Chrome as "running" and will not start a new instance.
+- If you close all Chrome windows, all `chrome.exe` processes will terminate, and the watchdog will restart Chrome.
+
+**Best Practice:**
+- Use only the executable name (`chrome.exe`) in your config, not the full path, to ensure reliable detection.
+- Example:
+  ```json
+  { "name": "chrome.exe", "args": "" }
+  ```
+
+**Summary:**  
+For multi-process applications like Chrome, always monitor by executable name, not full path, to prevent repeated launches and ensure correct process management.
+
+---
+
 ## 💻 Usage
 
 1. **Build the project**  

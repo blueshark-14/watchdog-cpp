@@ -1,7 +1,8 @@
 {
   "processes": [
     { "name": "notepad.exe", "args": "" },
-    { "name": "calc.exe", "args": "" }
+    { "name": "mspaint.exe", "args": "" },
+    { "name": "taskmgr.exe", "args": "" }
   ],
   "foreground": "notepad.exe"
 }

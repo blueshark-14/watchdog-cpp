@@ -87,6 +87,18 @@ static std::string ws2s(const WCHAR* wstr) {
     return strTo;
 }
 
+// Helper for case-insensitive comparison
+static bool iequals(const std::string& a, const std::string& b) {
+    return a.size() == b.size() &&
+        std::equal(
+            a.begin(), a.end(),
+            b.begin(),
+            [](char a, char b) {
+                return std::tolower(static_cast<unsigned char>(a)) == std::tolower(static_cast<unsigned char>(b));
+            }
+        );
+}
+
 // Checks if a process with the given name is running
 bool OSApiWrapper::isProcessRunning(const std::string& name) {
     std::cout << "Checking if process is running: " << name << std::endl;
@@ -102,7 +114,7 @@ bool OSApiWrapper::isProcessRunning(const std::string& name) {
     if (Process32FirstW(hSnap, &pe)) {
         do {
             // Convert process name from WCHAR* to std::string and compare
-            if (name == ws2s(pe.szExeFile)) {
+            if (iequals(name, ws2s(pe.szExeFile))) {
                 found = true; // Found a matching process
                 break;
             }
