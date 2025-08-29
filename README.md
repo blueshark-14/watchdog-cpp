@@ -152,10 +152,10 @@ For multi-process applications like Chrome, always monitor by executable name, n
 | Native OS API as separate component                              | ✅ Done   |
 | Extensible for other OS                                          | ✅ Done   |
 | Log all events to Windows Event Log                              | ✅ Done   |
-| Integration tests for workflows                                  | ⬜ Pending|
+| Integration tests for workflows                                  | ✅ Done   |
 | Unit tests for all component methods                             | ⬜ Pending|
 
-> **Note:** Integration and unit tests are planned for future updates.
+> **Note:** Unit tests are planned for future updates. Integration tests are now included in `tests/integration/` and cover real-world workflows such as config reload, process restart, and removal.
 
 ---
 
