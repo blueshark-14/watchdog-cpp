@@ -137,6 +137,28 @@ For multi-process applications like Chrome, always monitor by executable name, n
 
 ---
 
+## ✅ Requirements Coverage
+
+| Requirement                                                      | Status    |
+|------------------------------------------------------------------|-----------|
+| Config file on startup                                           | ✅ Done   |
+| Dynamic config reload                                            | ✅ Done   |
+| List of processes & startup parameters in config                 | ✅ Done   |
+| Check/start all on startup                                       | ✅ Done   |
+| Dynamic add/start new process                                    | ✅ Done   |
+| Restart if stopped/killed                                        | ✅ Done   |
+| Stop monitoring removed processes                                | ✅ Done   |
+| Periodic process monitoring                                      | ✅ Done   |
+| Native OS API as separate component                              | ✅ Done   |
+| Extensible for other OS                                          | ✅ Done   |
+| Log all events to Windows Event Log                              | ✅ Done   |
+| Integration tests for workflows                                  | ⬜ Pending|
+| Unit tests for all component methods                             | ⬜ Pending|
+
+> **Note:** Integration and unit tests are planned for future updates.
+
+---
+
 ## 📄 License
 
 This project is licensed under the [MIT License](LICENSE).
