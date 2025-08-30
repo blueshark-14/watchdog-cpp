@@ -102,7 +102,7 @@ static bool iequals(const std::string& a, const std::string& b) {
 
 // Checks if a process with the given name is running
 bool OSApiWrapper::isProcessRunning(const std::string& name) {
-    std::cout << "Checking if process is running: " << name << std::endl;
+    logToWindowsEventLog("Checking if process is running: " + name);
     // Take a snapshot of all processes in the system
     HANDLE hSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
      if (hSnap == INVALID_HANDLE_VALUE) {
@@ -158,8 +158,7 @@ void OSApiWrapper::startProcess(const std::string& exe, const std::string& args)
         // Close process and thread handles to avoid resource leaks
         CloseHandle(pi.hProcess);
         CloseHandle(pi.hThread);
-        std::cout << "Started process: " << exe << " " << args << std::endl;
-        logToWindowsEventLog("Started process: " + exe + " " + args);
+        logToWindowsEventLog("Started process: " + exe + " " + args, EVENTLOG_INFORMATION_TYPE);
     } else {
         logToWindowsEventLog("Failed to start process: " + exe + " " + args, EVENTLOG_ERROR_TYPE);
     }
