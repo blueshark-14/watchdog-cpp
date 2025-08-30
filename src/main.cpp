@@ -5,14 +5,14 @@
 #include <thread>
 #include <atomic>
 #include "ConfigManager.h"
-#include "OSApiWrapper.h"
+#include "WindowsApiWrapper.h"
 #include "ProcessMonitor.h"
 #include "Logger.h"
 using namespace std;
 
 int main() {
     ConfigManager cfg("config.json");
-    OSApiWrapper api;
+    WindowsApiWrapper api;
     ProcessMonitor monitor(cfg, api);
 
     // Run the monitor in a background thread so the user can interact with the menu

@@ -9,9 +9,11 @@ public:
     ConfigManager(const std::string& path);
     void load();
     void watchForChanges(); // reload on file changes
-    bool reloadIfChanged();
-    std::vector<ProcessInfo> getProcesses() const;
-    std::string getForegroundApp() const;
+    virtual bool reloadIfChanged();
+    virtual const std::vector<ProcessInfo>& getProcesses() const;
+    virtual const std::string& getForegroundApp() const;
+
+    virtual ~ConfigManager() = default;
 private:
     std::string filepath;
     std::vector<ProcessInfo> processes;

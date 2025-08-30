@@ -159,6 +159,55 @@ For multi-process applications like Chrome, always monitor by executable name, n
 
 ---
 
+## 🧪 About Catch2 Unit Testing Macros
+
+- **Catch2** is a modern C++ unit testing framework used in this project.
+- **`TEST_CASE`** defines a test function; each is run independently.
+- **`REQUIRE(expr)`** asserts that `expr` is true; if not, the test fails immediately and reports the error.
+- **`CHECK(expr)`** asserts that `expr` is true; if not, the test logs a failure but continues running the test.
+- These macros make writing and reading tests simple, expressive, and reliable.
+
+---
+
+## 🧪 Running Unit Tests
+
+1. **Build the unit tests**  
+   - Open a terminal in your project root.
+   - Example for `test_ConfigManager.cpp`:
+     ```
+     g++ -std=c++11 -Isrc -Itests/unit tests/unit/test_ConfigManager.cpp src/ConfigManager.cpp -o tests/unit/test_ConfigManager.exe
+     ```
+     - `-Isrc` tells the compiler to look for header files in the `src` directory (so `#include "ConfigManager.h"` works).
+     - `-Itests/unit` tells the compiler to look for headers (like `catch.hpp`) in the `tests/unit` directory.
+   - Example for `test_ProcessMonitor.cpp`:
+     ```
+     g++ -std=c++11 -Isrc -Itests/unit tests/unit/test_ProcessMonitor.cpp src/ProcessMonitor.cpp src/ConfigManager.cpp -o tests/unit/test_ProcessMonitor.exe
+     ```
+     - Add any other `.cpp` files your test depends on.
+
+2. **Run the unit test executable**  
+   ```
+   tests/unit/test_ConfigManager.exe
+   tests/unit/test_ProcessMonitor.exe
+   ```
+
+- All test results and assertion details will be shown in the terminal.
+
+---
+
+## 🧪 Unit Testing and OOP Concepts
+
+- Unit tests for `ProcessMonitor` use mock classes (`MockApi`, `MockConfig`) to simulate dependencies.
+- **OOP concepts applied:**
+  - **Abstraction & Polymorphism:** Achieved by declaring methods in `OSApiWrapper` as `virtual = 0` (pure virtual) and using `override` in mocks.
+  - **Encapsulation:** Each component (API, config, monitor) is tested in isolation.
+  - **Testability:** Mocks allow testing logic without real OS/process interaction.
+- **OOP concepts in MockApi:**
+  - Used `virtual = 0` (pure virtual) in the base class to enable abstraction and polymorphism.
+  - Used `override` in `MockApi` to ensure correct method overriding and safe mocking for unit tests.
+
+---
+
 ## 📄 License
 
 This project is licensed under the [MIT License](LICENSE).

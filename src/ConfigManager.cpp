@@ -77,5 +77,5 @@ bool ConfigManager::reloadIfChanged() {
     return false;
 }
 
-std::vector<ProcessInfo> ConfigManager::getProcesses() const { return processes; }
-std::string ConfigManager::getForegroundApp() const { return foregroundApp; }
+const std::vector<ProcessInfo>& ConfigManager::getProcesses() const { return processes; }
+const std::string& ConfigManager::getForegroundApp() const { return foregroundApp; }
