@@ -236,7 +236,6 @@ void WindowsApiWrapper::bringToForeground(const std::string& name) {
 
     if (pid == 0) {
         // No process found with the given name
-        std::cerr << "Process not found: " << name << std::endl;
         logToWindowsEventLog("Process not found for foreground: " + name, EVENTLOG_WARNING_TYPE);
         return;
     }
@@ -250,10 +249,41 @@ void WindowsApiWrapper::bringToForeground(const std::string& name) {
     EnumWindows(EnumWindowsProc, reinterpret_cast<LPARAM>(&data));
     if (data.hwnd) {
         SetForegroundWindow(data.hwnd);
-        std::cout << "Brought process to foreground: " << name << std::endl;
         logToWindowsEventLog("Brought process to foreground: " + name);
     } else {
-        std::cerr << "No window found for process: " << name << std::endl;
         logToWindowsEventLog("No window found for process: " + name, EVENTLOG_WARNING_TYPE);
     }
+}
+
+// Checks if the given process is currently in the foreground (has the active window)
+bool WindowsApiWrapper::isProcessInForeground(const std::string& name) {
+    // Get the handle of the current foreground window
+    HWND foregroundHwnd = GetForegroundWindow();
+    if (!foregroundHwnd) return false;
+
+    // Get the process ID associated with the foreground window
+    DWORD foregroundPid = 0;
+    GetWindowThreadProcessId(foregroundHwnd, &foregroundPid);
+
+    // Take a snapshot of all processes to find the process name for the foreground PID
+    HANDLE hSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+    if (hSnap == INVALID_HANDLE_VALUE) return false;
+
+    PROCESSENTRY32W pe;
+    pe.dwSize = sizeof(PROCESSENTRY32W);
+    bool isForeground = false;
+
+    if (Process32FirstW(hSnap, &pe)) {
+        do {
+            if (pe.th32ProcessID == foregroundPid) {
+                // Compare the process name (case-insensitive)
+                if (iequals(name, ws2s(pe.szExeFile))) {
+                    isForeground = true;
+                }
+                break;
+            }
+        } while (Process32NextW(hSnap, &pe));
+    }
+    CloseHandle(hSnap);
+    return isForeground;
 }

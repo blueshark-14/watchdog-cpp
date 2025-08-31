@@ -15,8 +15,12 @@ int main() {
     WindowsApiWrapper api;
     ProcessMonitor monitor(cfg, api);
 
+     // Run the monitor in the main thread (no user menu)
+    monitor.run([]() { return true; }); // This will run indefinitely
+
     // Run the monitor in a background thread so the user can interact with the menu
-    std::atomic<bool> running{true};
+   // As no user interaction is needed, we can comment out it now
+    /*  std::atomic<bool> running{true};
     std::thread monitorThread([&]() {
         monitor.run([&running]() { return running.load(); });
     });
@@ -81,4 +85,5 @@ int main() {
     std::cout << "Foreground app should be: " << cfg.getForegroundApp() << std::endl;
     std::cout << "Press Enter to exit...";
     std::cin.get(); // wait for Enter
+    */
 }

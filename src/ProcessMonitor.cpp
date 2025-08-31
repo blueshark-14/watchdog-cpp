@@ -31,6 +31,8 @@ void ProcessMonitor::run(std::function<bool()> keepRunning) {
                 }
             }
             monitored = std::move(newMonitored);
+            // Bring the new foreground app to the foreground after config reload
+            api.bringToForeground(cfg.getForegroundApp());
         }
 
         // Ensure all monitored processes are running
@@ -42,6 +44,11 @@ void ProcessMonitor::run(std::function<bool()> keepRunning) {
                 api.startProcess(name, info.getArgs());
             }
         }
+         // Always enforce the configured foreground app is in the foreground
+        const std::string& fgApp = cfg.getForegroundApp();
+        if (!fgApp.empty() && !api.isProcessInForeground(fgApp)) {
+            api.bringToForeground(fgApp);
+        }   
 
         std::this_thread::sleep_for(std::chrono::seconds(2));
     }

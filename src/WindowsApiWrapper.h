@@ -11,4 +11,5 @@ public:
     void startProcess(const std::string& exe, const std::string& args) override;
     void killProcess(const std::string& name) override;
     void bringToForeground(const std::string& name) override;
+    bool isProcessInForeground(const std::string& name) override;
 };

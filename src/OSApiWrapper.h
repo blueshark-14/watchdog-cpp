@@ -12,4 +12,5 @@ public:
     virtual void startProcess(const std::string& exe, const std::string& args) = 0;
     virtual void killProcess(const std::string& name) = 0;
     virtual void bringToForeground(const std::string& name) = 0;
+    virtual bool isProcessInForeground(const std::string& name) = 0;
 };
