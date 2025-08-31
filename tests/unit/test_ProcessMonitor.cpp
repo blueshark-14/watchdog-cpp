@@ -60,6 +60,7 @@ public:
         running.erase(std::remove(running.begin(), running.end(), name), running.end());
     }
     void bringToForeground(const std::string&) override {}
+    bool isProcessInForeground(const std::string&) override { return true; }    
 };
 
 class MockConfig : public ConfigManager {
