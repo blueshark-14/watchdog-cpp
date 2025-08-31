@@ -210,9 +210,18 @@ For multi-process applications like Chrome, always monitor by executable name, n
 
 ## ⚠️ Limitations
 
-- **Unit tests are currently run manually:**  
-  At present, unit tests must be built and executed manually from the terminal. There is no automated test runner or CI integration yet.  
-  For professional projects, automated and continuous testing is recommended.
+- **Unit tests can now be run automatically via CI:**  
+  Continuous Integration (CI) is set up using GitHub Actions.  
+  On every push or pull request, all unit tests are built and run automatically.
+- You can still run unit tests manually from the terminal if desired.
+
+---
+
+## 🚦 Continuous Integration
+
+This project uses [GitHub Actions](https://github.com/features/actions) for automated building and unit testing.
+- On every push or pull request, all unit tests are built and run automatically.
+- See `.github/workflows/ci.yml` for details.
 
 ---
 

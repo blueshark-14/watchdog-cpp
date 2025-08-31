@@ -1,0 +1,15 @@
+name: Build and Test
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build and run unit tests
+        run: |
+          g++ -std=c++11 -Isrc -Itests/unit tests/unit/test_ConfigManager.cpp src/ConfigManager.cpp -o tests/unit/test_ConfigManager.exe
+          g++ -std=c++11 -Isrc -Itests/unit tests/unit/test_ProcessMonitor.cpp src/ProcessMonitor.cpp src/ConfigManager.cpp -o tests/unit/test_ProcessMonitor.exe
+          tests\unit\test_ConfigManager.exe
+          tests\unit\test_ProcessMonitor.exe
