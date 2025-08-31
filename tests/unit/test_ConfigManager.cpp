@@ -22,6 +22,11 @@
 #include <thread>    // For sleep
 #include <chrono>    // For sleep duration
 
+// Dummy logger for unit tests:
+// This prevents linker errors when ConfigManager or other code calls logToWindowsEventLog.
+// In unit tests, we don't need to actually log to the Windows Event Log.
+void logToWindowsEventLog(const std::string&, unsigned short) {}
+
 // Helper: Write a config file for testing
 void write_test_config(const std::string& path, const std::string& proc, const std::string& args, const std::string& fg) {
     std::ofstream f(path); // Open file for writing
