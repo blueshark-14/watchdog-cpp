@@ -208,6 +208,14 @@ For multi-process applications like Chrome, always monitor by executable name, n
 
 ---
 
+## ⚠️ Limitations
+
+- **Unit tests are currently run manually:**  
+  At present, unit tests must be built and executed manually from the terminal. There is no automated test runner or CI integration yet.  
+  For professional projects, automated and continuous testing is recommended.
+
+---
+
 ## 📄 License
 
 This project is licensed under the [MIT License](LICENSE).
