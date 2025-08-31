@@ -33,8 +33,13 @@ int main() {
         std::cout << "5. Exit\n";
         std::cout << "Enter your choice: ";
         std::cin >> choice;
+        if (std::cin.fail()) {
+            std::cin.clear(); // clear error flags
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // discard invalid input
+            std::cout << "Invalid input. Please enter a number between 1 and 5.\n";
+            continue; // restart loop
+        }
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // clear input buffer
-
         if (choice == 5) break;
 
         std::cout << "Enter process name (e.g., notepad.exe): ";

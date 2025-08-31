@@ -37,6 +37,7 @@
 #include <iostream>
 #include <sys/stat.h>
 #include <ctime>
+#include "Logger.h" 
 #include "json.hpp" //  JSON library
 using json = nlohmann::json;
 
@@ -54,7 +55,7 @@ ConfigManager::ConfigManager(const std::string& path) : filepath(path) {
 void ConfigManager::load() {
     std::ifstream file(filepath);
     if (!file) {
-        std::cerr << "Failed to open config file: " << filepath << std::endl;
+        logToWindowsEventLog("Failed to open config file: " + filepath);
         return;
     }
     json j;
@@ -70,7 +71,7 @@ void ConfigManager::load() {
 bool ConfigManager::reloadIfChanged() {
     std::time_t mod = getFileModTime(filepath);
     if (mod != lastModified) {
-        std::cout << "Config file changed, reloading..." << std::endl;
+        logToWindowsEventLog("Config file changed, reloading...");
         load();
         return true;
     }
