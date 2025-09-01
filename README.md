@@ -33,8 +33,17 @@ watchdog-cpp/
 │   ├── ConfigManager.h/cpp
 │   ├── ProcessMonitor.h/cpp
 │   ├── OSApiWrapper.h/cpp
+│   ├── WindowsApiWrapper.h/cpp
 │   └── ProcessInfo.h
+├── tests/
+│   └── unit/
+│       ├── test_ConfigManager.cpp
+│       ├── test_ProcessMonitor.cpp
+│       └── catch.hpp
 ├── config.json
+├── .github/
+│   └── workflows/
+│       └── ci.yml
 └── .vscode/
     └── tasks.json
 ```
@@ -153,9 +162,7 @@ For multi-process applications like Chrome, always monitor by executable name, n
 | Extensible for other OS                                          | ✅ Done   |
 | Log all events to Windows Event Log                              | ✅ Done   |
 | Integration tests for workflows                                  | ✅ Done   |
-| Unit tests for all component methods                             | ⬜ Pending|
-
-> **Note:** Unit tests are planned for future updates. Integration tests are now included in `tests/integration/` and cover real-world workflows such as config reload, process restart, and removal.
+| Unit tests for all component methods                             | ✅ Done   |
 
 ---
 
@@ -185,7 +192,7 @@ For multi-process applications like Chrome, always monitor by executable name, n
      ```
      - Add any other `.cpp` files your test depends on.
 
-2. **Run the unit test executable**  
+2. **Run the unit test executables**  
    ```
    tests/unit/test_ConfigManager.exe
    tests/unit/test_ProcessMonitor.exe
@@ -208,20 +215,19 @@ For multi-process applications like Chrome, always monitor by executable name, n
 
 ---
 
-## ⚠️ Limitations
-
-- **Unit tests can now be run automatically via CI:**  
-  Continuous Integration (CI) is set up using GitHub Actions.  
-  On every push or pull request, all unit tests are built and run automatically.
-- You can still run unit tests manually from the terminal if desired.
-
----
-
 ## 🚦 Continuous Integration
 
 This project uses [GitHub Actions](https://github.com/features/actions) for automated building and unit testing.
 - On every push or pull request, all unit tests are built and run automatically.
 - See `.github/workflows/ci.yml` for details.
+- You can view the status and results for each commit or PR in the **Actions** tab on GitHub.
+
+---
+
+## ⚠️ Limitations
+
+- Some integration and UI tests may still require manual verification.
+- Automated unit tests cover core logic and components, but not all possible edge cases or real-world scenarios.
 
 ---
 
@@ -232,4 +238,4 @@ This project is licensed under the [MIT License](LICENSE).
 ---
 
 > **Developed with care by Rakib Hasan**  
-> _Feel free to explore, use, and extend!_
+> _Feel free to explore,
