@@ -1,5 +1,7 @@
 #include "Logger.h"
+#include <iostream>
 
+#ifdef _WIN32
 void logToWindowsEventLog(const std::string& message, WORD type) {
     HANDLE hEventLog = RegisterEventSourceA(NULL, "WatchdogCPP");
     if (hEventLog) {
@@ -19,3 +21,8 @@ void logToWindowsEventLog(const std::string& message, WORD type) {
         DeregisterEventSource(hEventLog);
     }
 }
+#else
+void logToWindowsEventLog(const std::string& message, int type) {
+    std::cout << "[LOG] " << message << std::endl;
+}
+#endif

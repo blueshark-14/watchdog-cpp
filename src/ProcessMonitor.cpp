@@ -27,7 +27,7 @@ void ProcessMonitor::run(std::function<bool()> keepRunning) {
             for (auto it = monitored.begin(); it != monitored.end(); ++it) {
                 const std::string& name = it->first;
                 if (newMonitored.find(name) == newMonitored.end()) {
-                    logToWindowsEventLog("Stopped monitoring: " + name, EVENTLOG_WARNING_TYPE);
+                    logToWindowsEventLog("Stopped monitoring: " + name, WDOG_LOG_WARNING);
                 }
             }
             monitored = std::move(newMonitored);
@@ -40,7 +40,7 @@ void ProcessMonitor::run(std::function<bool()> keepRunning) {
             const std::string& name = it->first;
             const ProcessInfo& info = it->second;
             if (!api.isProcessRunning(name)) {
-                logToWindowsEventLog("Process stopped, restarting: " + name, EVENTLOG_WARNING_TYPE);
+                logToWindowsEventLog("Process stopped, restarting: " + name, WDOG_LOG_WARNING);
                 api.startProcess(name, info.getArgs());
             }
         }
