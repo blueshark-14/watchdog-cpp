@@ -1,7 +1,7 @@
 {
   "processes": [
-    { "name": "gedit", "args": "" },
-    { "name": "nano", "args": "" }
+    { "name": "notepad.exe", "args": "" },
+    { "name": "mspaint.exe", "args": "" }
   ],
-  "foreground": ""
+  "foreground": "notepad.exe"
 }

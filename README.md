@@ -106,6 +106,7 @@ watchdog-cpp/
 
 ## 📝 Example `config.json`
 
+**For Windows**
 ```json
 {
   "processes": [
@@ -115,7 +116,16 @@ watchdog-cpp/
   "foreground": "notepad.exe"
 }
 ```
-
+**For Linux:**
+```json
+{
+  "processes": [
+    { "name": "gedit", "args": "" },
+    { "name": "nano", "args": "" }
+  ],
+  "foreground": "gedit"
+}
+```
 ---
 
 ## 📝 Note on Monitoring Multi-Process Applications (e.g., chrome.exe)
