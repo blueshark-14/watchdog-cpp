@@ -8,11 +8,25 @@
 #include "WindowsApiWrapper.h"
 #include "ProcessMonitor.h"
 #include "Logger.h"
+
+#ifdef _WIN32
+#include "WindowsApiWrapper.h"
+#else
+#include "LinuxApiWrapper.h"
+#endif
+
 using namespace std;
 
 int main() {
     ConfigManager cfg("config.json");
-    WindowsApiWrapper api;
+
+    // Use the correct API wrapper for the platform
+    #ifdef _WIN32
+        WindowsApiWrapper api;
+    #else
+        LinuxApiWrapper api;
+    #endif
+    
     ProcessMonitor monitor(cfg, api);
 
      // Run the monitor in the main thread (no user menu)

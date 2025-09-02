@@ -12,6 +12,7 @@
         "src/ProcessMonitor.cpp",
         "src/OSApiWrapper.cpp",
         "src/WindowsApiWrapper.cpp",
+        // replace the above line with src/LinuxApiWrapper.cpp for building on Linux
         "src/Logger.cpp", 
         // add other .cpp files if you have them
         "-o",

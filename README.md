@@ -1,7 +1,7 @@
 # 🛡️ Watchdog-CPP
 
-A modern, cross-platform-inspired **process monitoring and management tool** written in C++ for Windows.  
-This project demonstrates advanced Windows API usage, robust C++11 code structure, and practical system programming skills.
+A modern, cross-platform-inspired **process monitoring and management tool** written in C++ for Windows and Linux.  
+This project demonstrates advanced Windows and Linux API usage, robust C++11 code structure, and practical system programming skills.
 
 ---
 
@@ -13,8 +13,10 @@ This project demonstrates advanced Windows API usage, robust C++11 code structur
 - **Interactive Console Control:**  
   Easily check, start, kill, or bring processes to the foreground via a user-friendly menu.
 
-- **Windows API Integration:**  
-  Uses native WinAPI for process enumeration, launching, termination, and window management.
+- **Native OS API Integration:**  
+  Uses a dedicated OS API component for process enumeration, launching, termination, and window management.  
+  - **Windows:** Uses native WinAPI  
+  - **Linux:** Uses POSIX/system calls
 
 - **Configurable:**  
   All monitored processes and the preferred foreground app are defined in a simple JSON file.
@@ -34,6 +36,7 @@ watchdog-cpp/
 │   ├── ProcessMonitor.h/cpp
 │   ├── OSApiWrapper.h/cpp
 │   ├── WindowsApiWrapper.h/cpp
+│   ├── LinuxApiWrapper.h/cpp
 │   └── ProcessInfo.h
 ├── tests/
 │   └── unit/
@@ -47,6 +50,57 @@ watchdog-cpp/
 └── .vscode/
     └── tasks.json
 ```
+
+---
+
+## 🌐 Cross-Platform Architecture
+
+- **OS API Isolation:**  
+  All platform-specific logic is encapsulated in the `OSApiWrapper` interface and its implementations:  
+  - `WindowsApiWrapper` for Windows (WinAPI)
+  - `LinuxApiWrapper` for Linux (POSIX/system calls)
+
+- **Single Codebase:**  
+  The main application logic (`ProcessMonitor`, `ConfigManager`, etc.) is OS-agnostic and interacts only with the `OSApiWrapper` interface.
+
+- **Platform Selection:**  
+  The correct OS API implementation is selected at compile time using preprocessor macros:
+  ```cpp
+  #ifdef _WIN32
+      WindowsApiWrapper api;
+  #else
+      LinuxApiWrapper api;
+  #endif
+  ```
+
+---
+
+## 🏗️ Building for Windows and Linux
+
+- **Windows Build:**
+  ```sh
+  g++ -std=c++11 -Isrc src/main.cpp src/ConfigManager.cpp src/ProcessMonitor.cpp src/OSApiWrapper.cpp src/WindowsApiWrapper.cpp -o build/main.exe
+  ```
+
+- **Linux Build:**
+  ```sh
+  g++ -std=c++11 -Isrc src/main.cpp src/ConfigManager.cpp src/ProcessMonitor.cpp src/OSApiWrapper.cpp src/LinuxApiWrapper.cpp -o build/main
+  ```
+  *(Add `-lstdc++fs` if your g++ version requires it for `<filesystem>`)*
+
+> **Note:**  
+> The Linux build requires C++17 or newer because `LinuxApiWrapper` uses `std::filesystem`.  
+> Use `-std=c++17` (or newer) for Linux builds:
+> ```
+> g++ -std=c++17 -Isrc src/main.cpp src/ConfigManager.cpp src/ProcessMonitor.cpp src/OSApiWrapper.cpp src/LinuxApiWrapper.cpp -o build/main
+> ```
+> If you get a linker error about filesystem, add `-lstdc++fs` (needed for GCC 8 and earlier):
+> ```
+> g++ -std=c++17 ... -lstdc++fs
+> ```
+
+- **Tip:**  
+  For larger projects, consider using [CMake](https://cmake.org/) to manage platform-specific sources and build configurations.
 
 ---
 
@@ -94,9 +148,14 @@ For multi-process applications like Chrome, always monitor by executable name, n
 
 2. **Run the executable**  
    - From the terminal:  
-     ```
-     build\main.exe
-     ```
+     - On Windows:  
+       ```
+       build\main.exe
+       ```
+     - On Linux:  
+       ```
+       ./build/main
+       ```
 
 3. **Interact via the menu**  
    - Choose to check, start, kill, or bring a process to the foreground.
@@ -116,7 +175,7 @@ For multi-process applications like Chrome, always monitor by executable name, n
 ## 🛠️ Technical Highlights
 
 - **C++11**: Uses modern C++ features for safety and clarity.
-- **Windows API**: Directly interacts with system processes and windows.
+- **Windows & Linux API**: Directly interacts with system processes and windows (WinAPI/POSIX).
 - **Robust Error Handling**: Gracefully handles missing processes and invalid user input.
 - **Extensible**: Easily add more process management features or port to other platforms.
 
@@ -132,7 +191,7 @@ For multi-process applications like Chrome, always monitor by executable name, n
 ## 👨‍💻 Why This Project?
 
 - **Demonstrates real-world C++ system programming**
-- **Showcases Windows API proficiency**
+- **Showcases Windows and Linux API proficiency**
 - **Highlights clean, maintainable code and modular design**
 - **Ready for extension or integration into larger monitoring solutions**
 
@@ -141,7 +200,7 @@ For multi-process applications like Chrome, always monitor by executable name, n
 ## 📢 Recruiter Notes
 
 - **Code is clean, well-commented, and production-ready.**
-- **Demonstrates both low-level Windows API skills and modern C++ design.**
+- **Demonstrates both low-level Windows/Linux API skills and modern C++ design.**
 - **Shows ability to build practical, user-facing developer tools.**
 
 ---
@@ -163,6 +222,8 @@ For multi-process applications like Chrome, always monitor by executable name, n
 | Log all events to Windows Event Log                              | ✅ Done   |
 | Integration tests for workflows                                  | ✅ Done   |
 | Unit tests for all component methods                             | ✅ Done   |
+| **Full watchdog workflow for both Linux and Windows**            | ✅ Done   |
+| **Separate build configurations for Linux and Windows**          | ✅ Done   |
 
 ---
 
@@ -228,6 +289,7 @@ This project uses [GitHub Actions](https://github.com/features/actions) for auto
 
 - Some integration and UI tests may still require manual verification.
 - Automated unit tests cover core logic and components, but not all possible edge cases or real-world scenarios.
+- On Linux, `bringToForeground` and `isProcessInForeground` are not implemented due to platform limitations.
 
 ---
 
@@ -238,4 +300,4 @@ This project is licensed under the [MIT License](LICENSE).
 ---
 
 > **Developed with care by Rakib Hasan**  
-> _Feel free to explore,
+> _Feel free to explore, use, and extend!_
